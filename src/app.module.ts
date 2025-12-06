@@ -7,6 +7,7 @@ import { databaseConfig } from './config/database.config';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ApiKeysModule } from './api-keys/api-keys.module';
+import { ProtectedModule } from './protected/protected.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { ApiKeysModule } from './api-keys/api-keys.module';
     UsersModule,
     AuthModule,
     ApiKeysModule,
+    ProtectedModule,
   ],
   controllers: [AppController],
   providers: [AppService],
