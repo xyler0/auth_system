@@ -1,6 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { AllExceptionsFilter } from './common/filters/all-exceptions.filter';
 import { TransformInterceptor } from './common/interceptors/transform.interceptor';
@@ -38,17 +39,60 @@ async function bootstrap() {
 
   const port = process.env.PORT || 3000;
   await app.listen(port);
-  
-  console.log(`
-  Application is running on: http://localhost:${port}
-  API Documentation:
-     - POST   /auth/signup        - Create new user account
-     - POST   /auth/login         - Login and get JWT token
-     - POST   /keys/create        - Create API key (requires JWT)
-     - GET    /keys               - List your API keys (requires JWT)
-     - POST   /keys/:id/revoke    - Revoke API key (requires JWT)
-     - DELETE /keys/:id           - Delete API key (requires JWT)
-     - GET    /protected/*        - Protected endpoints (JWT or API key)
-  `);
+
+  const config = new DocumentBuilder()
+    .setTitle('Auth API System')
+    .setDescription(
+      `A comprehensive authentication system with JWT and API Key support.`,)
+       .setVersion('1.0')
+    .setContact(
+      'API Support',
+      'https://example.com',
+      'support@example.com',
+    )
+    .setLicense('MIT', 'https://opensource.org/licenses/MIT')
+    .addBearerAuth(
+      {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        name: 'JWT',
+        description: 'Enter JWT token',
+        in: 'header',
+      },
+      'JWT-auth',
+    )
+    .addApiKey(
+      {
+        type: 'apiKey',
+        name: 'X-API-Key',
+        in: 'header',
+        description: 'Enter your API key',
+      },
+      'Api-Key',
+    )
+    .addTag('Authentication', 'User signup and login endpoints')
+    .addTag('API Keys', 'API key management for service authentication')
+    .addTag('Protected', 'Example protected endpoints')
+    .build();
+
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document, {
+    customSiteTitle: 'Auth API - Documentation',
+    customCss: `
+      .swagger-ui .topbar { display: none }
+      .swagger-ui .info { margin: 50px 0 }
+      .swagger-ui .scheme-container { margin: 20px 0 }
+    `,
+    swaggerOptions: {
+      persistAuthorization: true,
+      docExpansion: 'none',
+      filter: true,
+      showRequestDuration: true,
+      tagsSorter: 'alpha',
+      operationsSorter: 'alpha',
+    },
+  });
+  console.log(`Application is running on: http://localhost:${port}`);
 }
 bootstrap();
