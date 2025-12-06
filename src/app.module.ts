@@ -15,7 +15,7 @@ import { ProtectedModule } from './protected/protected.module';
       isGlobal: true,
       envFilePath: '.env',
     }),
-    TypeOrmModule.forRoot(databaseConfig),
+    TypeOrmModule.forRoot(databaseConfig()),
     UsersModule,
     AuthModule,
     ApiKeysModule,

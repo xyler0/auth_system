@@ -40,8 +40,8 @@ async function bootstrap() {
   await app.listen(port);
   
   console.log(`
-  🚀 Application is running on: http://localhost:${port}
-  📚 API Documentation:
+  Application is running on: http://localhost:${port}
+  API Documentation:
      - POST   /auth/signup        - Create new user account
      - POST   /auth/login         - Login and get JWT token
      - POST   /keys/create        - Create API key (requires JWT)
