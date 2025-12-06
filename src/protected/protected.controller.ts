@@ -162,9 +162,9 @@ export class ProtectedController {
   })
   getAdminData(@CurrentUser() user: any) {
     return {
-      message: 'Admin endpoint - typically would check user roles',
+      message: 'Admin endpoint - typically would check user roles any atm',
       user,
-      note: 'Add role-based authorization for production use',
+      note: 'role-based authorization for production use lol',
     };
   }
 }

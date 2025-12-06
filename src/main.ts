@@ -10,17 +10,17 @@ import { LoggingInterceptor } from './common/interceptors/logging.interceptor';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Enable CORS if needed
+  // Enable CORS
   app.enableCors();
 
   // Global validation pipe
   app.useGlobalPipes(
     new ValidationPipe({
-      whitelist: true, 
-      forbidNonWhitelisted: true, 
-      transform: true, 
+      whitelist: true,
+      forbidNonWhitelisted: true,
+      transform: true,
       transformOptions: {
-        enableImplicitConversion: true, 
+        enableImplicitConversion: true,
       },
     }),
   );
@@ -36,21 +36,15 @@ async function bootstrap() {
     new LoggingInterceptor(),
     new TransformInterceptor(),
   );
-
-  const port = process.env.PORT || 3000;
-  await app.listen(port);
-
+  
+  // Swagger configuration
   const config = new DocumentBuilder()
     .setTitle('Auth API System')
     .setDescription(
-      `A comprehensive authentication system with JWT and API Key support.`,)
-       .setVersion('1.0')
-    .setContact(
-      'API Support',
-      'https://example.com',
-      'support@example.com',
+      `A comprehensive authentication system with JWT and API Key support.
+      `,
     )
-    .setLicense('MIT', 'https://opensource.org/licenses/MIT')
+   
     .addBearerAuth(
       {
         type: 'http',
@@ -72,8 +66,8 @@ async function bootstrap() {
       'Api-Key',
     )
     .addTag('Authentication', 'User signup and login endpoints')
-    .addTag('API Keys', 'API key management for service authentication')
     .addTag('Protected', 'Example protected endpoints')
+    .addTag('API Keys', 'API key management for service authentication')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
@@ -83,16 +77,29 @@ async function bootstrap() {
       .swagger-ui .topbar { display: none }
       .swagger-ui .info { margin: 50px 0 }
       .swagger-ui .scheme-container { margin: 20px 0 }
+      .swagger-ui .filter-container { display: none }
     `,
     swaggerOptions: {
       persistAuthorization: true,
-      docExpansion: 'none',
-      filter: true,
+      docExpansion: 'list', 
+      filter: false, 
       showRequestDuration: true,
-      tagsSorter: 'alpha',
-      operationsSorter: 'alpha',
+      tagsSorter: (a, b) => {
+        const order = ['Authentication', 'Protected', 'API Keys'];
+        return order.indexOf(a) - order.indexOf(b);
+      },
+      operationsSorter: 'undefined',
     },
   });
-  console.log(`Application is running on: http://localhost:${port}`);
+
+  // Start the application
+  const port = process.env.PORT || 3000;
+  await app.listen(port);
+
+  console.log(`
+  Application is running on: http://localhost:${port}
+   Swagger Documentation: http://localhost:${port}/api
+  
+  `);
 }
 bootstrap();
